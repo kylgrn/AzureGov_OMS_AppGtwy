@@ -1,0 +1,131 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "Web Application Firewall Logs",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/Web Application Firewall Logs')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "Web Application Firewall Logs",
+                        "Name": "Web Application Firewall Logs",
+                        "Author": "admin.kgreen@cawaterazure.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "NumberTileListBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Detected by Client IP",
+                                        "newGroup": false,
+                                        "icon": "data:image/png;base64,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",
+                                        "useIcon": true
+                                    },
+                                    "Tile": {
+                                        "Legend": "Detected by Client IP - Highest Count",
+                                        "Query": "AzureDiagnostics | where Category == \"ApplicationGatewayFirewallLog\" | summarize  count() by clientIp_s | top 1 by clientIp_s asc nulls last | project count_ ",
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "AzureDiagnostics | where Category == \"ApplicationGatewayFirewallLog\" | summarize count() by clientIp_s, Resource | sort by count_ desc nulls last | project clientIp_s, Resource, count_ ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "ColumnsTitle": {
+                                            "Name": "Client IP",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#e81123",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Filters": [],
+                        "OverviewTile": {
+                            "Id": "SingleNumberBuilderTile",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "Tile": {
+                                    "Legend": "Detected Clients",
+                                    "Query": "AzureDiagnostics | where Category == \"ApplicationGatewayFirewallLog\" | summarize count()"
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search * | limit 1 | project TimeGenerated",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

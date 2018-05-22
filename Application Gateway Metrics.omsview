@@ -1,0 +1,437 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "Application Gateway Metrics",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/Application Gateway Metrics')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "Application Gateway Metrics",
+                        "Name": "Application Gateway Metrics",
+                        "Author": "admin.kgreen@cawaterazure.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Application Gateway Metrics",
+                                        "newGroup": true
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Avg throughput per second (Mb)",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize avg(throughput_d) by Resource, bin(TimeGenerated, 1m) | extend ThroughputMb = (avg_throughput_d/1000)/1000 | project Resource, TimeGenerated, ThroughputMb | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Unhealthy backend VM count",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize max(unHealthyHostCount_d) by Resource, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Healthy backend VM Count",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize max(healthyHostCount_d) by Resource, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Application Gateway Metrics",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Failed requests by API",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d >= 400 | summarize count() by requestUri_s, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Avg Latency (ms) by AppGW",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize avg(latency_d) by Resource, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Requests per Min by API",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | summarize count() by requestUri_s, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Application Gateway Metrics",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "MyService API Requests per Min",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where requestUri_s == \"/\" | summarize count() by requestUri_s, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Error count past hour by AppGW",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d >= 400 | summarize count() by httpStatus_d, Resource | project httpStatus_d, Resource, count_",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Avg Requests per min",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize avg(requestCount_d) by Resource, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Application Gateway Metrics",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Avg Failed Requests per min",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayPerformanceLog\" | summarize avg(failedRequestCount_d) by Resource, bin(TimeGenerated, 1m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "HTTP Error count per hour by API",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d >= 400 | summarize count(httpStatus_d) by httpStatus_d,requestUri_s, bin(TimeGenerated, 1h) | order by count_httpStatus_d desc | project httpStatus_d, requestUri_s, TimeGenerated, count_httpStatus_d",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Successful request count",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d < 400 | summarize count() by httpStatus_d, Resource | project httpStatus_d, Resource, count_",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Application Gateway Metrics",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Failed requests by backend VM",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d >= 400 | parse requestQuery_s with * \"SERVER-ROUTED=\" serverRouted \"&\" * | extend httpStatus = tostring(httpStatus_d) | summarize count() by serverRouted, bin(TimeGenerated, 5m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Successful requests by backend VM",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d < 400 | parse requestQuery_s with * \"SERVER-ROUTED=\" serverRouted \"&\" * | extend httpStatus = tostring(httpStatus_d) | summarize count() by serverRouted, bin(TimeGenerated, 5m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "HTTP 502 errors by backend VM",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" | where httpStatus_d == 502 | parse requestQuery_s with * \"SERVER-ROUTED=\" serverRouted \"&\" * | extend httpStatus = tostring(httpStatus_d) | summarize count() by serverRouted, bin(TimeGenerated, 5m) | render timechart",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "Filters": [],
+                        "OverviewTile": {
+                            "Id": "TwoTrendsBuilderTile",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "Trend1": {
+                                    "Legend": "All Data",
+                                    "LegendColor": "#009e49",
+                                    "ChartQuery": "search * | sort by TimeGenerated desc",
+                                    "Calculation": {
+                                        "Operation": "Sum"
+                                    }
+                                },
+                                "Trend2": {
+                                    "Legend": "All Events",
+                                    "LegendColor": "#0072c6",
+                                    "ChartQuery": "search in (Event) * | sort by TimeGenerated desc",
+                                    "Calculation": {
+                                        "Operation": "Sum"
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search * | sort by TimeGenerated desc",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
